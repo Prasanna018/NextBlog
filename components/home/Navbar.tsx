@@ -6,6 +6,15 @@ import { Button } from '../ui/button'
 import SearchInput from './SearchInput'
 import { ToggleMode } from './ToggleMode'
 
+import {
+
+    SignInButton,
+    SignUpButton,
+    SignedIn,
+    SignedOut,
+    UserButton,
+} from '@clerk/nextjs'
+import { motion, motionValue } from 'motion/react';
 
 function Navbar() {
     const [isMobile, setIsMobile] = useState(false)
@@ -46,10 +55,60 @@ function Navbar() {
                         <ToggleMode></ToggleMode>
                     </div>
                     <div className='hidden md:flex items-center gap-2'>
+                        <SignedOut>
+                            <SignInButton mode='modal'>
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                >
+                                    <Button
+                                        variant="ghost"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        Sign in
+                                    </Button>
+                                </motion.div>
+                            </SignInButton>
 
-                        <Button>Login</Button>
-                        <Button>SignUp</Button>
+                            <SignUpButton mode='modal'>
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                >
+                                    <Button
+                                        variant="default"
+                                        className="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors rounded-lg"
+                                    >
+                                        Sign up
+                                    </Button>
+                                </motion.div>
+                            </SignUpButton>
+                        </SignedOut>
 
+                        <SignedIn>
+                            <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                className="relative"
+                            >
+                                <UserButton />
+                                <motion.span
+                                    className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-green-500"
+                                    animate={{
+                                        scale: [1, 1.2, 1],
+                                        opacity: [0.8, 1, 0.8]
+                                    }}
+                                    transition={{
+                                        repeat: Infinity,
+                                        duration: 1.5,
+                                        ease: "easeInOut"
+                                    }}
+                                />
+                            </motion.div>
+                        </SignedIn>
                     </div>
                     <Button
                         onClick={() => setIsMobile(!isMobile)}
@@ -66,40 +125,104 @@ function Navbar() {
             {
                 isMobile && (
                     <div className="w-full p-4 md:hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
-                        <div className="flex flex-col items-center space-y-4">
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex flex-col items-center space-y-4"
+                        >
                             {/* Search Input with subtle shadow and transition */}
-                            <div className="w-full py-2 transition-all duration-200">
+                            <motion.div
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="w-full py-2 transition-all duration-200"
+                            >
                                 <SearchInput />
-                            </div>
+                            </motion.div>
 
                             {/* Navigation Links with better spacing and visual hierarchy */}
-                            <div className="w-full max-w-md space-y-1">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.1, duration: 0.3 }}
+                                className="w-full max-w-md space-y-1"
+                            >
                                 <Link
                                     href="/article"
                                     className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 
-                   hover:bg-blue-50 dark:hover:bg-blue-900/30 
-                   hover:shadow-sm active:scale-[0.98]
-                   text-blue-600 dark:text-blue-400"
+               hover:bg-blue-50 dark:hover:bg-blue-900/30 
+               hover:shadow-sm active:scale-[0.98]
+               text-blue-600 dark:text-blue-400"
                                 >
-                                    <BookAIcon className="h-5 w-5" />
+                                    <motion.div whileHover={{ scale: 1.1 }}>
+                                        <BookAIcon className="h-5 w-5" />
+                                    </motion.div>
                                     <span className="text-sm font-medium">Article</span>
                                 </Link>
 
                                 <Link
                                     href="/dashboard"
                                     className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 
-                   hover:bg-blue-50 dark:hover:bg-blue-900/30 
-                   hover:shadow-sm active:scale-[0.98]
-                   text-blue-600 dark:text-blue-400"
+               hover:bg-blue-50 dark:hover:bg-blue-900/30 
+               hover:shadow-sm active:scale-[0.98]
+               text-blue-600 dark:text-blue-400"
                                 >
-                                    <LayoutDashboardIcon className="h-5 w-5" />
+                                    <motion.div whileHover={{ scale: 1.1 }}>
+                                        <LayoutDashboardIcon className="h-5 w-5" />
+                                    </motion.div>
                                     <span className="text-sm font-medium">Dashboard</span>
                                 </Link>
-                            </div>
-                        </div>
+                            </motion.div>
+                        </motion.div>
 
-                        {/* Optional decorative element */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-20"></div>
+                        {/* Buttons section with staggered animations */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2, duration: 0.3 }}
+                            className='w-full py-6'
+                        >
+                            <div className="w-full flex flex-col gap-3">
+                                <SignedOut>
+                                    <SignInButton mode="modal">
+                                        <motion.div
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <Button
+                                                variant="default"
+                                                size="sm"
+                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
+                                            >
+                                                Sign In
+                                            </Button>
+                                        </motion.div>
+                                    </SignInButton>
+
+                                    <SignUpButton mode="modal">
+                                        <motion.div
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors"
+                                            >
+                                                Create Account
+                                            </Button>
+                                        </motion.div>
+                                    </SignUpButton>
+                                </SignedOut>
+                            </div>
+                            <SignedIn>
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                >
+                                    <UserButton />
+                                </motion.div>
+                            </SignedIn>
+                        </motion.div>
                     </div>
                 )
             }
