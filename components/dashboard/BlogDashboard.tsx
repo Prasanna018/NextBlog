@@ -4,8 +4,30 @@ import { Button } from '../ui/button'
 import { FileText, MessageCircle, Plus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import RecentArticles from './RecentArticles'
+import { prisma } from '@/lib/prisma'
 
-const BlogDashboard = () => {
+const BlogDashboard = async () => {
+
+    const [articles, totalComments] = await Promise.all([
+        prisma.article.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                comments: true,
+                author: {
+                    select: {
+                        name: true,
+                        email: true,
+                        imageUrl: true
+                    }
+                }
+            }
+
+
+        }),
+        prisma.comment.count()
+    ])
     return (
         <div className='flex-1 p-4 md:p-8'>
             <div className='flex justify-between items-center mb-8'>
@@ -27,7 +49,7 @@ const BlogDashboard = () => {
                         <FileText className='h-6 w-6'></FileText>
                     </CardHeader>
                     <CardContent>
-                        <div className='text-2xl font-bold'>2</div>
+                        <div className='text-2xl font-bold'>{articles.length}</div>
                         <p>+5 from last month</p>
                     </CardContent>
 
@@ -39,7 +61,7 @@ const BlogDashboard = () => {
                         <MessageCircle className='h-6 w-6'></MessageCircle>
                     </CardHeader>
                     <CardContent>
-                        <div className='text-2xl font-bold'>2</div>
+                        <div className='text-2xl font-bold'>{totalComments}</div>
                         <p>+5 from last month</p>
                     </CardContent>
 
@@ -63,7 +85,7 @@ const BlogDashboard = () => {
 
 
                 <div>
-                    <RecentArticles></RecentArticles>
+                    <RecentArticles articles={articles}></RecentArticles>
                 </div>
             </div>
         </div>

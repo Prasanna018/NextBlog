@@ -1,12 +1,37 @@
-import React from 'react'
+'use client'
+import React, { startTransition, useActionState, useTransition } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 import { ArrowUpLeftFromSquare } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Badge } from '../ui/badge'
 import Link from 'next/link'
+import { Article, Prisma } from '@prisma/client'
+import { deletePost } from '@/actions/delete-post'
 
-const RecentArticles = () => {
+
+
+type RecentArticlesProp = {
+    articles: Prisma.ArticleGetPayload<{
+        include: {
+            comments: true;
+            author: {
+                select: {
+                    name: true,
+                    email: true,
+                    imageUrl: true
+                }
+            }
+
+        },
+
+
+
+    }>[];
+
+}
+
+const RecentArticles: React.FC<RecentArticlesProp> = ({ articles }) => {
     return (
         <div className='mb-8'>
             <Card>
@@ -22,45 +47,61 @@ const RecentArticles = () => {
 
 
                 </CardHeader>
-                <CardContent className=''>
-                    <Table>
-                        <TableHeader>
-                            <TableRow className=''>
-                                <TableHead>Title</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Comments</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Actions</TableHead>
+
+                {
+                    !articles.length ? (<CardContent>No Articles Found</CardContent>) :
+                        (
+                            <CardContent className=''>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className=''>
+                                            <TableHead>Title</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Comments</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Actions</TableHead>
 
 
 
 
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow className=''>
-                                <TableCell>title is here</TableCell>
-                                <TableCell className='flex justify-start'>
-                                    <Badge variant={'secondary'} className='text-green-400 p-2'>Published</Badge>
-                                </TableCell>
-                                <TableCell>
-                                    5
-                                </TableCell>
-                                <TableCell>
-                                    12 feb
-                                </TableCell>
-                                <TableCell>
-                                    <div className='flex gap-2'>
-                                        <Link href={`/dashboard/article/${1234}/edit`}>
-                                            <Button className='cursor-pointer' variant={'secondary'}>Edit</Button>
-                                        </Link>
-                                        <DeleteButton></DeleteButton>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </CardContent>
+                                        </TableRow>
+                                    </TableHeader>
+
+
+                                    <TableBody>
+
+                                        {
+                                            articles.map((article) => (
+                                                <TableRow key={article.id} className=''>
+                                                    <TableCell>{article.title}</TableCell>
+                                                    <TableCell className='flex justify-start'>
+                                                        <Badge variant={'secondary'} className='text-green-400 p-2'>Published</Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {article?.comments.length}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {article.createdAt.toDateString()}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className='flex gap-2'>
+                                                            <Link href={`/dashboard/article/${article.id}/edit`}>
+                                                                <Button className='cursor-pointer' variant={'secondary'}>Edit</Button>
+                                                            </Link>
+                                                            <DeleteButton articleId={article.id} ></DeleteButton>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        }
+
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        )
+
+                }
+
             </Card>
 
         </div>
@@ -70,11 +111,20 @@ const RecentArticles = () => {
 export default RecentArticles
 
 
-const DeleteButton = () => {
-    return <form>
+type deleteArticleProp = {
+    articleId: string
+}
 
-        <Button className='cursor-pointer' size={'sm'} type='submit' variant={'destructive'}>
-            Delete
+const DeleteButton: React.FC<deleteArticleProp> = ({ articleId }) => {
+    const [isPending, startTransition] = useTransition();
+    return <form action={() => {
+        startTransition(async () => {
+            await deletePost(articleId)
+        })
+    }}>
+
+        <Button disabled={isPending} className='cursor-pointer' size={'sm'} type='submit' variant={'destructive'}>
+            {isPending ? "Deleting" : "Delete"}
         </Button>
     </form>
 }

@@ -7,13 +7,24 @@ import dynamic from 'next/dynamic'
 import 'react-quill-new/dist/quill.snow.css';
 import { Button } from '../ui/button';
 import { createPost } from '@/actions/create-post';
+import type { Article } from '@prisma/client';
+import Image from 'next/image';
+import { editPost } from '@/actions/edit-post';
+import { error } from 'console';
+
+
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
 
-const CreateArticlePage = () => {
-    const [content, setContent] = useState("..");
-    const [formState, action, isPending] = useActionState(createPost, { errors: {} })
+type EditArticleProp = {
+    article: Article;
+}
 
+const EditArticle: React.FC<EditArticleProp> = ({ article }) => {
+    const [content, setContent] = useState(article.content);
+    const [formState, action, isPending] = useActionState(editPost.bind(null, article.id), { errors: {} })
+    console.log(article)
+    console.log(article.title)
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
         e.preventDefault();
@@ -24,6 +35,7 @@ const CreateArticlePage = () => {
             action(formData);
         })
         console.log(formData)
+
 
     }
     console.log(formState);
@@ -40,13 +52,14 @@ const CreateArticlePage = () => {
                             <div className='space-y-2'>
                                 <Input
                                     name='title'
+                                    defaultValue={article.title}
                                     type='text' placeholder='Post Title'></Input>
 
                                 {formState.errors.title && <span className='text-red-700'>{formState.errors.title}</span>}
                             </div>
                             <div className='space-y-2 w-full'>
                                 <Label>Category</Label>
-                                <select defaultValue={''} className='p-1 w-full' name='category' id='category'>
+                                <select defaultValue={article.category} className='p-1 w-full' name='category' id='category'>
                                     <option value={''}>
                                         select options
                                     </option>
@@ -74,6 +87,23 @@ const CreateArticlePage = () => {
                                     type='file'
                                 ></Input>
 
+                                {
+                                    article.featuredImage && (
+                                        <Image
+                                            src={article.featuredImage}
+
+
+                                            alt={article.title}
+                                            height={200}
+                                            width={200}
+                                            className='p-1 object-cover'
+                                        ></Image>
+
+                                    )
+                                }
+
+
+
                                 {formState.errors.featuredImage && <span>{formState.errors.featuredImage[0]}</span>}
                             </div>
 
@@ -98,7 +128,7 @@ const CreateArticlePage = () => {
                         <div className='flex gap-2 justify-end mt-4'>
                             <Button variant={'outline'} >Cancle</Button>
                             <Button disabled={isPending} type='submit'>{
-                                isPending ? 'Publishing' : "Publish"
+                                isPending ? 'Editing..' : "Edit Post"
                             }</Button>
                         </div>
                     </form>
@@ -108,4 +138,4 @@ const CreateArticlePage = () => {
     )
 }
 
-export default CreateArticlePage
+export default EditArticle

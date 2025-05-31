@@ -4,7 +4,7 @@ import Navbar from '@/components/home/Navbar'
 import TopArticles from '@/components/home/TopArticles'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 function Home() {
   return (
@@ -21,8 +21,11 @@ function Home() {
             <h2 className='font-bold text-black dark:text-white/70 text-3xl text-center md:text-4xl'>Featured Articles</h2>
           </div>
           <div>
+            <Suspense fallback={<span>Loading....</span>}>
 
-            <TopArticles></TopArticles>
+
+              <TopArticles></TopArticles>
+            </Suspense>
           </div>
         </div>
         <div className='py-8 text-center'>
