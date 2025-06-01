@@ -7,11 +7,6 @@
     "start": "next start",
     "lint": "next lint",
     "build": "prisma generate && next build",
-    "vercel:deploy": "vercel --prod",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev --name init",
-    "prisma:push": "prisma db push",
-    "prisma:studio": "prisma studio",
     "postinstall": "prisma generate"
   },
   "dependencies": {
