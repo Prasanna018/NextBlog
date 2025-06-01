@@ -1,9 +1,9 @@
-'use client'
-import React from 'react'
-import { Input } from '../ui/input'
-import { Search } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
-import { searchInput } from '@/actions/searchInput'
+'use client';
+import React from 'react';
+import { Input } from '../ui/input';
+import { Search } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { searchInput } from '@/actions/searchInput';
 
 const ArticleSearchBar = () => {
     const params = useSearchParams();
