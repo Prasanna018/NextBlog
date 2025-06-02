@@ -7,7 +7,7 @@ import { Calendar, Calendar1Icon, CalendarCheck, TimerIcon } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
 async function TopArticles() {
-    const articles = await prisma.article.findMany({
+    const articles = await prisma?.article?.findMany({
         orderBy: {
             createdAt: 'desc',
 

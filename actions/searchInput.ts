@@ -2,7 +2,7 @@
 'use server'
 
 import { redirect } from "next/navigation";
-import { fromTheme } from "tailwind-merge"
+
 
 export const searchInput = async (formData: FormData) => {
     const searchText = formData.get('search');
